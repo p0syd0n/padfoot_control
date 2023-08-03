@@ -70,6 +70,8 @@ def shell():
                         sio.emit('sendCommand', {'command': shellInput, 'target': selected_target})
                         while waiting:
                             pass
+                case 'EXIT':
+                    break
         match command:
             case 'list':
                 waiting = True
