@@ -71,6 +71,7 @@ def shell():
                         while waiting:
                             pass
                 case 'EXIT':
+                    selected_target = ""
                     break
         match command:
             case 'list':
