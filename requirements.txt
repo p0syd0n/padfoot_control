@@ -1,0 +1,4 @@
+python-dotenv
+public_ip
+python-socketio
+websocket-client

