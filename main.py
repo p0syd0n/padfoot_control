@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEBUG = True #True/False
+DEBUG = os.environ['DEBUG'] #True/False
 
 match DEBUG:
     case True:
@@ -19,7 +19,7 @@ match DEBUG:
         SERVER = 'https://padfoot-server.onrender.com'
 
 API_KEY = os.environ["API_KEY"]
-LATE_MODULE_OUTPUT = "log" #log/info
+LATE_MODULE_OUTPUT = os.environ["LATE_MODULE_OUTPUT"] #log/info
 
 # Connect to the Socket.IO server
 sio = socketio.Client()
