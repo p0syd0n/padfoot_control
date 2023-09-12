@@ -17,7 +17,7 @@ DEBUG = True #os.environ['DEBUG'] #True/False
 
 match DEBUG:
     case True:
-        SERVER = 'https://3000-p0syd0n-padfootserver-bziowkwf04k.ws-us103.gitpod.io'
+        SERVER = 'https://3000-p0syd0n-padfootserver-14zsp1owg0h.ws-us104.gitpod.io'
     case False:
         SERVER = 'https://padfoot-server.onrender.com'
 
