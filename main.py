@@ -13,15 +13,15 @@ from PIL import Image, ImageTk
 import queue
 import io
 
-DEBUG = True #os.environ['DEBUG'] #True/False
+DEBUG = False #os.environ['DEBUG'] #True/False
 
 match DEBUG:
     case True:
         SERVER = 'https://3000-p0syd0n-padfootserver-14zsp1owg0h.ws-us104.gitpod.io'
     case False:
-        SERVER = 'https://padfoot-server.onrender.com'
+        SERVER = 'https://padfoot-server.adaptable.app'
 
-API_KEY ="WQNV12Vr4bsLEY8VAMdyhpbp1kTewosS7ARe0H47JEfdQcxwjwBokr9p2Xm34qGhm2G6oesk3fLVYsbBKv5hBb79PKNMyDZL2MNSEkTGuVs0SyoCn4dM0MEknHH8vQF9"# os.environ["API_KEY"]
+API_KEY ="WQNV12Vr4bsLEY8VAMdyhpbp1kTewosS7ARe0H47JEfdQcxwjwBokr9p2Xm34qGhm2G6oesk3fLVYsbBKv5hBb79PKNMyDZL2MNSEkTGuVs0SyoCn4dM0MEknHH8vQF9"# os.environ["API_KEY"]#idc if it is leaked whatever
 LATE_MODULE_OUTPUT = "log"#os.environ["LATE_MODULE_OUTPUT"] #log/info
 
 # Connect to the Socket.IO server
