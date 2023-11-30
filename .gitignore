@@ -1,6 +1,5 @@
 /.env
 /api.py
 build
-dist
 dropper_windows.spec
 __pycahche__
